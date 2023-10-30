@@ -13,12 +13,19 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { HeaderComponent } from './header/header.component';
 import { SideNavComponent } from './side-nav/side-nav.component';
+import { MealprepComponent } from './mealprep/mealprep.component';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import { MatSidenavComponent } from './mat-sidenav/mat-sidenav.component';
+import { MatTableModule } from '@angular/material/table';
+
 
 @NgModule({
   declarations: [
     AppComponent,
     HeaderComponent,
     SideNavComponent,
+    MatSidenavComponent,
   ],
   imports: [
     BrowserModule,
@@ -30,7 +37,11 @@ import { SideNavComponent } from './side-nav/side-nav.component';
     MatMenuModule,
     MatDividerModule,
     MatSidenavModule,
-    MatListModule
+    MatListModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MealprepComponent,
+    MatTableModule
   ],
   providers: [],
   bootstrap: [AppComponent]
