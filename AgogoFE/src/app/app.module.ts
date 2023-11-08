@@ -18,6 +18,14 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import { MatSidenavComponent } from './mat-sidenav/mat-sidenav.component';
 import { MatTableModule } from '@angular/material/table';
+import { CheckboxTableComponent } from './checkbox-table/checkbox-table.component';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
+import { HomeComponent } from './home/home.component';
+import { FormGroup,ReactiveFormsModule  } from '@angular/forms';
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { ClientComponent } from './client/client.component';
 
 
 @NgModule({
@@ -26,6 +34,10 @@ import { MatTableModule } from '@angular/material/table';
     HeaderComponent,
     SideNavComponent,
     MatSidenavComponent,
+    MealprepComponent,
+    HomeComponent,
+    DashboardComponent,
+    ClientComponent,
   ],
   imports: [
     BrowserModule,
@@ -40,8 +52,12 @@ import { MatTableModule } from '@angular/material/table';
     MatListModule,
     MatFormFieldModule,
     MatInputModule,
-    MealprepComponent,
-    MatTableModule
+    MatTableModule,
+    MatCheckboxModule,
+    CheckboxTableComponent,
+    FormsModule,
+    HttpClientModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

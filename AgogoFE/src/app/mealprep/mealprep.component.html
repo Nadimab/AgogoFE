@@ -1,29 +1,25 @@
-<!-- <mat-toolbar class="mat-elevation-z8">
-    <span>Meal prep</span>
-    <span class="example-spacer"></span>
-    <button mat-raised-button class="example-icon" color="primary">Generate</button>
-  </mat-toolbar> -->
-<!-- <h1>Meal prep</h1>
-<div class="raw">
-    <mat-form-field appearance="outline">
-        <mat-label>Protein</mat-label>
-        <input matInput>
-    </mat-form-field>
-    <mat-form-field appearance="outline">
-        <mat-label>Carbs</mat-label>
-        <input matInput>
-    </mat-form-field>
-    <mat-form-field appearance="outline">
-        <mat-label>Fat</mat-label>
-        <input matInput>
-    </mat-form-field>
-    <mat-form-field appearance="outline">
-        <mat-label>Days</mat-label>
-        <input matInput>
-    </mat-form-field>
-    <button mat-raised-button color="primary">Generate</button>
-</div> -->
-
+<form [formGroup]="mealplanForm">
+    <div class="raw">
+        <mat-form-field appearance="outline">
+            <mat-label>Protein</mat-label>
+            <input matInput formControlName="protein">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+            <mat-label>Carbs</mat-label>
+            <input matInput formControlName="carbs">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+            <mat-label>Fat</mat-label>
+            <input matInput formControlName="fat">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+            <mat-label>Days</mat-label>
+            <input matInput formControlName="daysnbr">
+        </mat-form-field>
+        <button mat-raised-button color="primary"  (click)="generateMealPlan()">Generate</button>
+    </div>
+</form>
+<!-- <app-checkbox-table></app-checkbox-table> -->
 <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
 
     <!-- Checkbox Column -->
@@ -50,22 +46,22 @@
       <td mat-cell *matCellDef="let element"> {{element.position}} </td>
     </ng-container>
   
-    <!-- Name Column -->
-    <ng-container matColumnDef="name">
-      <th mat-header-cell *matHeaderCellDef> Name </th>
-      <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+    <!-- Breakfast Column -->
+    <ng-container matColumnDef="breakfast">
+      <th mat-header-cell *matHeaderCellDef> Breakfast </th>
+      <td mat-cell *matCellDef="let element"> {{element.breakfast}} </td>
     </ng-container>
   
-    <!-- Weight Column -->
-    <ng-container matColumnDef="weight">
-      <th mat-header-cell *matHeaderCellDef> Weight </th>
-      <td mat-cell *matCellDef="let element"> {{element.weight}} </td>
+    <!-- Lunch Column -->
+    <ng-container matColumnDef="lunch">
+      <th mat-header-cell *matHeaderCellDef> Lunch </th>
+      <td mat-cell *matCellDef="let element"> {{element.lunch}} </td>
     </ng-container>
   
-    <!-- Symbol Column -->
-    <ng-container matColumnDef="symbol">
-      <th mat-header-cell *matHeaderCellDef> Symbol </th>
-      <td mat-cell *matCellDef="let element"> {{element.symbol}} </td>
+    <!-- Dinner Column -->
+    <ng-container matColumnDef="dinner">
+      <th mat-header-cell *matHeaderCellDef> Dinner </th>
+      <td mat-cell *matCellDef="let element"> {{element.dinner}} </td>
     </ng-container>
   
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
@@ -73,5 +69,12 @@
         (click)="selection.toggle(row)">
     </tr>
   </table>
+  
+<div class="btn-submit">
+    <button mat-raised-button color="primary">Submit</button>
+</div>
+
+
+
   
 

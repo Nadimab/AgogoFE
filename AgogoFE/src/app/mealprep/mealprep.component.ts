@@ -1,45 +1,140 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, OnInit } from '@angular/core';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatSidenav } from '@angular/material/sidenav';
 import { delay, filter } from 'rxjs/operators';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { NavigationEnd, Router } from '@angular/router';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import {SelectionModel} from '@angular/cdk/collections';
 import {MatTableDataSource, MatTableModule} from '@angular/material/table';
 import {MatCheckboxModule} from '@angular/material/checkbox';
-import { MatFormField, MatFormFieldModule } from '@angular/material/form-field';
-import { MatToolbar } from '@angular/material/toolbar';
 
-export interface PeriodicElement {
-  name: string;
+export interface CombinationElement {
+  breakfast: string;
   position: number;
-  weight: number;
-  symbol: string;
+  lunch: string;
+  dinner: string;
 }
 
-const ELEMENT_DATA: PeriodicElement[] = [
-  {position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H'},
-  {position: 2, name: 'Helium', weight: 4.0026, symbol: 'He'},
-  {position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li'},
-  {position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be'},
-  {position: 5, name: 'Boron', weight: 10.811, symbol: 'B'},
-  {position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C'},
-  {position: 7, name: 'Nitrogen', weight: 14.0067, symbol: 'N'},
+const ELEMENT_DATA: CombinationElement[] = [
 ];
 
-@UntilDestroy()
+
 @Component({
-  selector: 'app-mealprep',
-  templateUrl: './mealprep.component.html',
-  styleUrls: ['./mealprep.component.css'],
-  standalone: true,
-  imports: [MatTableModule, MatCheckboxModule],
+    selector: 'app-mealprep',
+    templateUrl: './mealprep.component.html',
+    styleUrls: ['./mealprep.component.css'],
 })
-export class MealprepComponent {
+export class MealprepComponent{
+  mealplanForm: FormGroup;
   @ViewChild(MatSidenav)
   sidenav!: MatSidenav;
+  mealPlanData: any;
 
-  constructor(private observer: BreakpointObserver, private router: Router) {}
+  displayedColumns: string[] = ['select', 'position', 'breakfast', 'lunch', 'dinner'];
+  dataSource = new MatTableDataSource<CombinationElement>(ELEMENT_DATA);
+  selection = new SelectionModel<CombinationElement>(true, []);
+
+
+  constructor(private observer: BreakpointObserver, private router: Router, private http:HttpClient, private fb: FormBuilder){
+    this.mealplanForm = this.fb.group({
+      protein: '',
+      carbs: '',
+      fat: '',
+      daysnbr: ''
+    });
+  }
+  generateMealPlan(){
+    alert("protein = "+this.mealplanForm.get('protein')?.value+";carbs = "+this.mealplanForm.get('carbs')?.value+ ";fat = "+this.mealplanForm.get('fat')?.value)
+    this.fetchMealPrep('1',this.mealplanForm.get('protein')?.value,this.mealplanForm.get('carbs')?.value,this.mealplanForm.get('fat')?.value,this.mealplanForm.get('daysnbr')?.value)
+    console.log('Generate')
+    console.log(this.mealplanForm.get('protein')?.value)
+   }
+
+
+   fetchMealPrep(dietitianId:String ,prot: number,crbs: number,ft: number,dn: number){
+    // Define the query parameters
+    const dietitian_ID = dietitianId;
+    const protein_goal = prot;
+    const carbs_goal = crbs;
+    const fat_goal = ft;
+    const nbr_days = dn;
+    const params = {
+      dietitian_ID,
+      protein_goal,
+      carbs_goal,
+      fat_goal,
+      nbr_days
+    };
+
+    console.log(params)
+    const body = JSON.stringify(params);
+    console.log(body)
+
+    const transformedBody = {
+      dietitian_ID,
+      "protein_goal": parseInt(JSON.parse(body)["protein_goal"]),
+      "carbs_goal": parseInt(JSON.parse(body)["carbs_goal"]),
+      "fat_goal": parseInt(JSON.parse(body)["fat_goal"]),
+      "nbr_days": parseInt(JSON.parse(body)["nbr_days"])
+    };
+    console.log(transformedBody)
+
+     // Define the headers
+     const headers = new HttpHeaders()
+     .set('Content-Type', 'application/json')
+    this.http.post('http://127.0.0.1:5000/MealPrep/generateMealPlan', JSON.stringify(transformedBody), { headers }).subscribe((data) => {
+      // Handle the response data here
+      const jsonData1 = JSON.stringify(data);
+      const jsonData2 = jsonData1.replace(/"{\\/g, '{');
+      const jsonData = jsonData2.replace(/\\/g,'').replace(/}"/g,'}');
+      console.log(jsonData) ;
+      this.mealPlanData = JSON.parse(jsonData);
+      alert('yoww2 '+this.mealPlanData.best_combinations[0].score) ;
+      alert(this.mealPlanData.best_combinations[0].breakfast.name) ;
+      // Remove data from table
+      ELEMENT_DATA.length = 0;
+      // Fill the combination element
+      for (var i = 0; i < this.mealPlanData.best_combinations.length; i++) {
+        console.log(i);
+        ELEMENT_DATA.push({position: i+1, breakfast: this.mealPlanData.best_combinations[i].breakfast.name, lunch: this.mealPlanData.best_combinations[i].lunch.name, dinner: this.mealPlanData.best_combinations[i].dinner.name});
+        this.dataSource = new MatTableDataSource<CombinationElement>(ELEMENT_DATA);
+      }
+
+      alert('yoww3 '+ELEMENT_DATA[0].breakfast) ;
+    }, (error) => {
+      // Handle errors here
+      console.error(error);
+      alert(error);
+    });
+  }
+
+  /** Whether the number of selected elements matches the total number of rows. */
+  isAllSelected() {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.dataSource.data.length;
+    return numSelected === numRows;
+  }
+
+  /** Selects all rows if they are not all selected; otherwise clear selection. */
+  toggleAllRows() {
+    if (this.isAllSelected()) {
+      this.selection.clear();
+      return;
+    }
+
+    this.selection.select(...this.dataSource.data);
+  }
+
+  /** The label for the checkbox on the passed row */
+  checkboxLabel(row?: CombinationElement): string {
+    if (!row) {
+      return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
+    }
+    return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.position + 1}`;
+  }
+
 
   ngAfterViewInit() {
     this.observer
@@ -66,34 +161,4 @@ export class MealprepComponent {
         }
       });
   }
-
-  displayedColumns: string[] = ['select', 'position', 'name', 'weight', 'symbol'];
-  dataSource = new MatTableDataSource<PeriodicElement>(ELEMENT_DATA);
-  selection = new SelectionModel<PeriodicElement>(true, []);
-
-  /** Whether the number of selected elements matches the total number of rows. */
-  isAllSelected() {
-    const numSelected = this.selection.selected.length;
-    const numRows = this.dataSource.data.length;
-    return numSelected === numRows;
-  }
-
-  /** Selects all rows if they are not all selected; otherwise clear selection. */
-  toggleAllRows() {
-    if (this.isAllSelected()) {
-      this.selection.clear();
-      return;
-    }
-
-    this.selection.select(...this.dataSource.data);
-  }
-
-  /** The label for the checkbox on the passed row */
-  checkboxLabel(row?: PeriodicElement): string {
-    if (!row) {
-      return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
-    }
-    return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.position + 1}`;
-  }
-
 }
