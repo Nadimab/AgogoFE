@@ -26,6 +26,15 @@ import { HomeComponent } from './home/home.component';
 import { FormGroup,ReactiveFormsModule  } from '@angular/forms';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { ClientComponent } from './client/client.component';
+import { LoginComponent } from './login/login.component';
+import { FlexLayoutModule } from '@angular/flex-layout';
+import {MatCardModule} from '@angular/material/card';
+import { ClientAddEditComponent } from './client-add-edit/client-add-edit.component';
+import {MatDialogModule} from '@angular/material/dialog';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import {MatRadioModule} from '@angular/material/radio';
+import {MatSelectModule} from '@angular/material/select';
+import { MatNativeDateModule } from '@angular/material/core';
 
 
 @NgModule({
@@ -38,6 +47,8 @@ import { ClientComponent } from './client/client.component';
     HomeComponent,
     DashboardComponent,
     ClientComponent,
+    LoginComponent,
+    ClientAddEditComponent,
   ],
   imports: [
     BrowserModule,
@@ -57,7 +68,14 @@ import { ClientComponent } from './client/client.component';
     CheckboxTableComponent,
     FormsModule,
     HttpClientModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    FlexLayoutModule,
+    MatCardModule,
+    MatDialogModule,
+    MatDatepickerModule,
+    MatRadioModule,
+    MatSelectModule,
+    MatNativeDateModule
   ],
   providers: [],
   bootstrap: [AppComponent]
